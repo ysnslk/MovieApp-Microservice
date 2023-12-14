@@ -24,4 +24,5 @@ public class User extends BaseEntity {
     private ERole role=ERole.GUEST;
     @Builder.Default
     private EStatus status = EStatus.PASSIVE;
+    private long authId;
 }
