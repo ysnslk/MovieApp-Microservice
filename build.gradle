@@ -30,7 +30,7 @@ allprojects {
 	}
 	dependencies {
 		implementation libs.springBootDataJpa
-		implementation libs.springBootStarterSecurity
+		//implementation libs.springBootStarterSecurity
 		implementation libs.springBootWeb
 		compileOnly libs.lombok
 		annotationProcessor libs.lombok
