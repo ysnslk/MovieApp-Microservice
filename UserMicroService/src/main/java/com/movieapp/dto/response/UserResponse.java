@@ -1,7 +1,5 @@
-package com.movieapp.response;
+package com.movieapp.dto.response;
 
-import com.movieapp.repository.enums.ERole;
-import com.movieapp.repository.enums.EStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

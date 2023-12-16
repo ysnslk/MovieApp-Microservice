@@ -7,15 +7,17 @@ import com.movieapp.exception.enums.FriendlyMessageCodes;
 import com.movieapp.exception.utils.FriendlyMessageUtils;
 import com.movieapp.repository.entity.User;
 import com.movieapp.repository.enums.ELanguage;
-import com.movieapp.response.FriendlyMessage;
-import com.movieapp.response.InternalApiResponse;
-import com.movieapp.response.UserResponse;
+import com.movieapp.dto.response.FriendlyMessage;
+import com.movieapp.dto.response.InternalApiResponse;
+import com.movieapp.dto.response.UserResponse;
 import com.movieapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.movieapp.constants.ApiUrl.*;
 
@@ -32,7 +34,7 @@ public class UserController {
     @CrossOrigin("*")
     public InternalApiResponse<UserResponse> register(@PathVariable("language")ELanguage language,
                                                       @RequestBody CreateUserRequestDto createUserRequestDto){
-        User user = userService.saveUser(language, createUserRequestDto);
+        User user = userService.saveUser(createUserRequestDto);
         UserResponse userResponse = convertUserResponse(user);
         return InternalApiResponse.<UserResponse>builder()
                 .friendlyMessage(FriendlyMessage.builder()
@@ -48,16 +50,14 @@ public class UserController {
 
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{language}" + UPDATE +"/{userId}")
+    @PutMapping("/{language}" + UPDATE)
     @Operation(summary = "This endpoint updates user", description = "Update user")
     @CrossOrigin("*")
     public InternalApiResponse<UserResponse> userUpdate(@PathVariable("language")ELanguage language,
-                                                        @PathVariable("userId") String userId,
                                                         @RequestBody UpdateUserRequestDto updateUserRequestDto){
-        log.debug("[{}][updateUser] -> request: {} {}", this.getClass().getSimpleName(), userId, updateUserRequestDto);
-        User user = userService.updateUser(language, userId, updateUserRequestDto);
+
+        User user = userService.updateUser(language, updateUserRequestDto);
         UserResponse userResponse = convertUserResponse(user);
-        log.debug("[{}][updateProduct] -> response: {}", this.getClass().getSimpleName(), userResponse);
         return InternalApiResponse.<UserResponse>builder()
                 .friendlyMessage(FriendlyMessage.builder()
                         .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
@@ -66,6 +66,38 @@ public class UserController {
                 .httpStatus(HttpStatus.OK)
                 .hasError(false)
                 .payload(userResponse)
+                .build();
+
+    }
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{language}" + FIND_ALL)
+    @Operation(summary = "This endpoint gets all users", description = "Get all")
+    @CrossOrigin("*")
+    public InternalApiResponse<List<User>> findAll(@PathVariable("language") ELanguage language){
+        List<User> users = userService.findAllUser();
+        return InternalApiResponse.<List<User>>builder()
+                .httpStatus(HttpStatus.OK)
+                .hasError(false)
+                .payload(users)
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{language}" + DELETE)
+    @Operation(summary = "This endpoint deletes user", description = "Delete user")
+    @CrossOrigin("*")
+    public InternalApiResponse<Boolean> safeDeleteUser(@PathVariable("language")ELanguage language,
+                                                        @RequestParam String  userId){
+
+        boolean isDeleted = userService.deleteUser(language, userId);
+        return InternalApiResponse.<Boolean>builder()
+                .friendlyMessage(FriendlyMessage.builder()
+                        .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
+                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.USER_SUCCESSFULLY_DELETED))
+                        .build())
+                .httpStatus(HttpStatus.OK)
+                .hasError(false)
+                .payload(isDeleted)
                 .build();
 
     }
