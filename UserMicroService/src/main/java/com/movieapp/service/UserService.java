@@ -3,17 +3,20 @@ package com.movieapp.service;
 import com.movieapp.dto.request.CreateUserRequestDto;
 import com.movieapp.dto.request.UpdateUserRequestDto;
 import com.movieapp.exception.enums.FriendlyMessageCodes;
+import com.movieapp.exception.exceptions.UserDeleteFailed;
 import com.movieapp.exception.exceptions.UserNotFoundException;
 import com.movieapp.mapper.IUserMapper;
 import com.movieapp.repository.IUserRepository;
 import com.movieapp.repository.entity.User;
 import com.movieapp.repository.enums.ELanguage;
-import com.movieapp.response.UserResponse;
+import com.movieapp.repository.enums.EStatus;
 import com.movieapp.utility.ServiceManager;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserService extends ServiceManager<User, String> {
@@ -28,31 +31,43 @@ public class UserService extends ServiceManager<User, String> {
 
     }
 
-    public User getUser(ELanguage language, String userId){
-        User user = userRepository.getByUserId(userId);
-        if (Objects.isNull(user)) {
-            throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION, "User not found for user id: " + userId);
+
+    public User saveUser(CreateUserRequestDto createUserRequestDto) {
+        User user = userMapper.saveToUser(createUserRequestDto);
+        return save(user);
+
+    }
+
+    public User updateUser(ELanguage language, UpdateUserRequestDto updateUserRequestDto) {
+        Optional<User> user = findById(updateUserRequestDto.getUserId());
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
+                    "User not found for user id: " + updateUserRequestDto.getUserId());
         }
-        return user;
+        user = Optional.ofNullable(userMapper.updateToUser(updateUserRequestDto));
+
+        return update(user.get());
     }
 
-
-    public User saveUser(ELanguage language, CreateUserRequestDto createUserRequestDto){
-        User user = userMapper.saveToUser(language, createUserRequestDto);
-        return save(user);
-
-    }
-    public User updateUser(ELanguage language, String userId, UpdateUserRequestDto updateUserRequestDto){
-        User user = getUser(language,userId);
-        user.setName(updateUserRequestDto.getName());
-        user.setSurname(updateUserRequestDto.getSurname());
-        user.setEmail(updateUserRequestDto.getEmail());
-        user.setPhoneNumber(updateUserRequestDto.getPhoneNumber());
-        user.setPassword(updateUserRequestDto.getPassword());
-        return save(user);
+    public List<User> findAllUser() {
+        return findAll();
     }
 
-
+    public boolean deleteUser(ELanguage language, String userId) {
+        Optional<User> user = findById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
+                    "User not found for user id: " + userId);
+        }
+        user.get().setStatus(EStatus.DELETED);
+        try {
+            update(user.get());
+        } catch (Exception e) {
+            throw new UserDeleteFailed(language, FriendlyMessageCodes.USER_DELETE_FAILED,
+                    "User delete failed for user id: " + userId);
+        }
+        return true;
+    }
 
 
 }
