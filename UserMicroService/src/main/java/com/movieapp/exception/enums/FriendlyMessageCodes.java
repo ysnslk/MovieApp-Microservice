@@ -13,7 +13,8 @@ public enum FriendlyMessageCodes implements IFriendlyMessageCode{
     USER_UPDATE_FAILED(1204),
     USER_ALREADY_DELETED(1205),
     USER_SUCCESSFULLY_DELETED(1206),
-    USER_DELETE_FAILED(1207);
+    USER_DELETE_FAILED(1207),
+    USERS_NOT_FOUND_EXCEPTION(1208);
 
 
     private final int value;

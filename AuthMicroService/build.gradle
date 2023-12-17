@@ -1,0 +1,15 @@
+buildscript{
+    dependencies{
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
+    }
+}
+dependencies {
+    implementation libs.springCloudOpenFeign
+    implementation libs.springBootDataMongo
+    implementation libs.springBootStarterSecurity
+    implementation libs.jwt
+    implementation libs.springBootAmqp
+    implementation libs.totp
+    implementation libs.commonscodec
+    implementation libs.zxing
+}
