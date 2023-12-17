@@ -3,8 +3,7 @@ package com.movieapp.service;
 import com.movieapp.dto.request.CreateUserRequestDto;
 import com.movieapp.dto.request.UpdateUserRequestDto;
 import com.movieapp.exception.enums.FriendlyMessageCodes;
-import com.movieapp.exception.exceptions.UserDeleteFailed;
-import com.movieapp.exception.exceptions.UserNotFoundException;
+import com.movieapp.exception.exceptions.*;
 import com.movieapp.mapper.IUserMapper;
 import com.movieapp.repository.IUserRepository;
 import com.movieapp.repository.entity.User;
@@ -31,11 +30,13 @@ public class UserService extends ServiceManager<User, String> {
 
     }
 
-
-    public User saveUser(CreateUserRequestDto createUserRequestDto) {
-        User user = userMapper.saveToUser(createUserRequestDto);
-        return save(user);
-
+    public User saveUser(ELanguage language, CreateUserRequestDto createUserRequestDto) {
+        try {
+            User user = userMapper.saveToUser(createUserRequestDto);
+            return save(user);
+        }catch (Exception e){
+            throw new UserNotCreatedException(language,FriendlyMessageCodes.USER_NOT_CREATED_EXCEPTION, "User not created");
+        }
     }
 
     public User updateUser(ELanguage language, UpdateUserRequestDto updateUserRequestDto) {
@@ -44,7 +45,13 @@ public class UserService extends ServiceManager<User, String> {
             throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
                     "User not found for user id: " + updateUserRequestDto.getUserId());
         }
-        user = Optional.ofNullable(userMapper.updateToUser(updateUserRequestDto));
+        try {
+            user = Optional.ofNullable(userMapper.updateToUser(updateUserRequestDto));
+        }
+        catch (Exception e){
+            throw new UserUpdateFailed(language, FriendlyMessageCodes.USER_UPDATE_FAILED,
+                    "User update failed for user id: " + updateUserRequestDto.getUserId());
+        }
 
         return update(user.get());
     }
@@ -59,7 +66,12 @@ public class UserService extends ServiceManager<User, String> {
             throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
                     "User not found for user id: " + userId);
         }
+        if (user.get().getStatus()== EStatus.DELETED){
+            throw new UserAlreadyDeletedException(language,FriendlyMessageCodes.USER_ALREADY_DELETED,
+                    "User already deleted for user id: " +userId);
+        }
         user.get().setStatus(EStatus.DELETED);
+
         try {
             update(user.get());
         } catch (Exception e) {
