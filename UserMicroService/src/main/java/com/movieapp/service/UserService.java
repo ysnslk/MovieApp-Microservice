@@ -56,8 +56,13 @@ public class UserService extends ServiceManager<User, String> {
         return update(user.get());
     }
 
-    public List<User> findAllUser() {
-        return findAll();
+    public List<User> findAllUser(ELanguage language) {
+        try {
+            return findAll();
+        }catch (Exception e) {
+            throw new UserDeleteFailed(language, FriendlyMessageCodes.USERS_NOT_FOUND_EXCEPTION,
+                    "User List not found ");
+        }
     }
 
     public boolean deleteUser(ELanguage language, String userId) {

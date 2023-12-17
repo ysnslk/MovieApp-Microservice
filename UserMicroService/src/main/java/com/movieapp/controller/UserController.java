@@ -73,7 +73,7 @@ public class UserController {
     @Operation(summary = "This endpoint gets all users", description = "Get all")
     @CrossOrigin("*")
     public InternalApiResponse<List<User>> findAll(@PathVariable("language") ELanguage language){
-        List<User> users = userService.findAllUser();
+        List<User> users = userService.findAllUser(language);
         return InternalApiResponse.<List<User>>builder()
                 .httpStatus(HttpStatus.OK)
                 .hasError(false)
