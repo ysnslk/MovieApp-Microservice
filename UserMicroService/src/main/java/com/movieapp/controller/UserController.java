@@ -34,7 +34,7 @@ public class UserController {
     @CrossOrigin("*")
     public InternalApiResponse<UserResponse> register(@PathVariable("language")ELanguage language,
                                                       @RequestBody CreateUserRequestDto createUserRequestDto){
-        User user = userService.saveUser(createUserRequestDto);
+        User user = userService.saveUser(language, createUserRequestDto);
         UserResponse userResponse = convertUserResponse(user);
         return InternalApiResponse.<UserResponse>builder()
                 .friendlyMessage(FriendlyMessage.builder()
@@ -45,7 +45,6 @@ public class UserController {
                 .hasError(false)
                 .payload(userResponse)
                 .build();
-
     }
 
 
