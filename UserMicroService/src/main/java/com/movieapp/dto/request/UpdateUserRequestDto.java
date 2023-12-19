@@ -17,5 +17,4 @@ public class UpdateUserRequestDto {
     private String email;
     private String password;
     private String phoneNumber;
-    private EStatus eStatus;
 }

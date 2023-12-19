@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -40,20 +39,20 @@ public class UserService extends ServiceManager<User, String> {
     }
 
     public User updateUser(ELanguage language, UpdateUserRequestDto updateUserRequestDto) {
-        Optional<User> user = findById(updateUserRequestDto.getUserId());
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
-                    "User not found for user id: " + updateUserRequestDto.getUserId());
-        }
         try {
+            Optional<User> user = findById(updateUserRequestDto.getUserId());
+            if (user.isEmpty()) {
+                throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
+                        "User not found for user id: " + updateUserRequestDto.getUserId());
+            }
             user = Optional.ofNullable(userMapper.updateToUser(updateUserRequestDto));
+            return update(user.get());
         }
         catch (Exception e){
             throw new UserUpdateFailed(language, FriendlyMessageCodes.USER_UPDATE_FAILED,
                     "User update failed for user id: " + updateUserRequestDto.getUserId());
         }
 
-        return update(user.get());
     }
 
     public List<User> findAllUser(ELanguage language) {
@@ -66,24 +65,25 @@ public class UserService extends ServiceManager<User, String> {
     }
 
     public boolean deleteUser(ELanguage language, String userId) {
-        Optional<User> user = findById(userId);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
+        try {
+            Optional<User> user = findById(userId);
+            if (user.isEmpty()) {
+                throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
                     "User not found for user id: " + userId);
-        }
-        if (user.get().getStatus()== EStatus.DELETED){
-            throw new UserAlreadyDeletedException(language,FriendlyMessageCodes.USER_ALREADY_DELETED,
+            }
+            if (user.get().getStatus()== EStatus.DELETED){
+                throw new UserAlreadyDeletedException(language,FriendlyMessageCodes.USER_ALREADY_DELETED,
                     "User already deleted for user id: " +userId);
         }
-        user.get().setStatus(EStatus.DELETED);
-
-        try {
+            user.get().setStatus(EStatus.DELETED);
             update(user.get());
-        } catch (Exception e) {
+            return true;
+        }
+        catch (Exception e) {
             throw new UserDeleteFailed(language, FriendlyMessageCodes.USER_DELETE_FAILED,
                     "User delete failed for user id: " + userId);
         }
-        return true;
+
     }
 
 
