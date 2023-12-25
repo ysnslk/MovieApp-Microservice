@@ -1,4 +1,5 @@
-rootProject.name = 'movieapp'
+rootProject.name = 'movieapp.user'
+rootProject.name = 'movieapp.auth'
 include 'UserMicroService'
 include 'AuthMicroService'
 
