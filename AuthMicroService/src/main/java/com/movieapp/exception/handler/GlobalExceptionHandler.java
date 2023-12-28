@@ -1,4 +1,4 @@
-    /*
+
     package com.movieapp.exception.handler;
 
     import com.movieapp.dto.response.FriendlyMessage;
@@ -16,8 +16,8 @@
     @RestControllerAdvice
     public class GlobalExceptionHandler {
         @ResponseStatus(HttpStatus.BAD_REQUEST)
-        @ExceptionHandler(UserNotCreatedException.class)
-        public InternalApiResponse<String> handleUserNotCreatedException(UserNotCreatedException exception){
+        @ExceptionHandler(AuthNotCreatedException.class)
+        public InternalApiResponse<String> handleAuthNotCreatedException(AuthNotCreatedException exception){
             return InternalApiResponse.<String>builder()
                     .friendlyMessage(FriendlyMessage.builder()
                             .title(FriendlyMessageUtils.getFriendlyMessage(exception.getLanguage(), FriendlyMessageCodes.ERROR))
@@ -30,8 +30,8 @@
         }
 
         @ResponseStatus(HttpStatus.BAD_REQUEST)
-        @ExceptionHandler(UserAlreadyDeletedException.class)
-       public InternalApiResponse<String> handleUserAlreadyDeletedException(UserAlreadyDeletedException exception){
+        @ExceptionHandler(AuthAlreadyDeletedException.class)
+       public InternalApiResponse<String> handleAuthAlreadyDeletedException(AuthAlreadyDeletedException exception){
             return InternalApiResponse.<String>builder()
                     .friendlyMessage(FriendlyMessage.builder()
                             .title(FriendlyMessageUtils.getFriendlyMessage(exception.getLanguage(), FriendlyMessageCodes.ERROR))
@@ -44,8 +44,8 @@
 
        }
         @ResponseStatus(HttpStatus.BAD_REQUEST)
-        @ExceptionHandler(UserDeleteFailed.class)
-        public InternalApiResponse<String> handleUserDeleteFailed(UserDeleteFailed exception){
+        @ExceptionHandler(AuthDeleteFailed.class)
+        public InternalApiResponse<String> handleAuthDeleteFailed(AuthDeleteFailed exception){
             return InternalApiResponse.<String>builder()
                     .friendlyMessage(FriendlyMessage.builder()
                             .title(FriendlyMessageUtils.getFriendlyMessage(exception.getLanguage(), FriendlyMessageCodes.ERROR))
@@ -58,8 +58,8 @@
 
         }
         @ResponseStatus(HttpStatus.BAD_REQUEST)
-        @ExceptionHandler(UserNotFoundException.class)
-        public InternalApiResponse<String> handleUserNotFoundException(UserNotFoundException exception){
+        @ExceptionHandler(AuthNotFoundException.class)
+        public InternalApiResponse<String> handleAuthNotFoundException(AuthNotFoundException exception){
             return InternalApiResponse.<String>builder()
                     .friendlyMessage(FriendlyMessage.builder()
                             .title(FriendlyMessageUtils.getFriendlyMessage(exception.getLanguage(), FriendlyMessageCodes.ERROR))
@@ -72,8 +72,8 @@
 
         }
         @ResponseStatus(HttpStatus.BAD_REQUEST)
-        @ExceptionHandler(UserUpdateFailed.class)
-        public InternalApiResponse<String> handleUserUpdateFailed(UserUpdateFailed exception){
+        @ExceptionHandler(AuthUpdateFailed.class)
+        public InternalApiResponse<String> handleAuthUpdateFailed(AuthUpdateFailed exception){
             return InternalApiResponse.<String>builder()
                     .friendlyMessage(FriendlyMessage.builder()
                             .title(FriendlyMessageUtils.getFriendlyMessage(exception.getLanguage(), FriendlyMessageCodes.ERROR))
@@ -86,4 +86,4 @@
 
         }
     }
-    */
+

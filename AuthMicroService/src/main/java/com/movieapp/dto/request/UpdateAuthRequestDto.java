@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UpdateAuthRequestDto {
     private String authId;
+    private String name;
+    private String surname;
     private String email;
     private String password;
 }
