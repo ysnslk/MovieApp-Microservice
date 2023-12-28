@@ -6,7 +6,7 @@ buildscript{
 dependencies {
     implementation libs.springCloudOpenFeign
     implementation libs.springBootDataMongo
-    implementation libs.springBootStarterSecurity
+    //implementation libs.springBootStarterSecurity
     implementation libs.jwt
     implementation libs.springBootAmqp
     implementation libs.totp

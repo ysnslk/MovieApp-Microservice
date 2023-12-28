@@ -29,12 +29,13 @@ public class UserService extends ServiceManager<User, String> {
 
     }
 
-    public User saveUser(ELanguage language, CreateUserRequestDto createUserRequestDto) {
+    public String saveUser(ELanguage language, CreateUserRequestDto createUserRequestDto) {
         try {
             User user = userMapper.saveToUser(createUserRequestDto);
-            return save(user);
+            save(user);
+            return user.getUserId();
         } catch (Exception e) {
-            throw new UserNotCreatedException(language, FriendlyMessageCodes.USER_NOT_CREATED_EXCEPTION, "User not created");
+            throw new UserNotCreatedException(language, FriendlyMessageCodes.USER_NOT_CREATED_EXCEPTION, "User not created.");
         }
     }
 
@@ -58,7 +59,7 @@ public class UserService extends ServiceManager<User, String> {
         try {
             return findAll();
         } catch (Exception e) {
-            throw new UserDeleteFailed(language, FriendlyMessageCodes.USERS_NOT_FOUND_EXCEPTION,
+            throw new UserNotFoundException(language, FriendlyMessageCodes.USERS_NOT_FOUND_EXCEPTION,
                     "User List not found ");
         }
     }

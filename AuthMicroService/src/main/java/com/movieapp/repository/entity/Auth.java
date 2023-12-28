@@ -18,6 +18,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Auth extends BaseEntity {
     @Id
     private String authId;
+    private String userId;
+    private String name;
+    private String surname;
     private String email;
     private String password;
     @Builder.Default

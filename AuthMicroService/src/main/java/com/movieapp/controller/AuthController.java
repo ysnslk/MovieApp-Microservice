@@ -6,6 +6,7 @@ import com.movieapp.dto.response.AuthResponse;
 import com.movieapp.dto.response.FriendlyMessage;
 import com.movieapp.dto.response.InternalApiResponse;
 import com.movieapp.exception.enums.FriendlyMessageCodes;
+import com.movieapp.exception.handler.GlobalExceptionHandler;
 import com.movieapp.exception.utils.FriendlyMessageUtils;
 import com.movieapp.repository.entity.Auth;
 import com.movieapp.repository.enums.ELanguage;
@@ -40,7 +41,7 @@ public class AuthController {
         return InternalApiResponse.<AuthResponse>builder()
                 .friendlyMessage(FriendlyMessage.builder()
                         .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
-                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.USER_SUCCESSFULLY_CREATED))
+                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.AUTH_SUCCESSFULLY_CREATED))
                         .build())
                 .httpStatus(HttpStatus.CREATED)
                 .hasError(false)
@@ -60,7 +61,7 @@ public class AuthController {
         return InternalApiResponse.<AuthResponse>builder()
                 .friendlyMessage(FriendlyMessage.builder()
                         .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
-                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.USER_SUCCESSFULLY_UPDATED))
+                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.AUTH_SUCCESSFULLY_UPDATED))
                         .build())
                 .httpStatus(HttpStatus.OK)
                 .hasError(false)
@@ -93,7 +94,7 @@ public class AuthController {
         return InternalApiResponse.<Boolean>builder()
                 .friendlyMessage(FriendlyMessage.builder()
                         .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
-                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.USER_SUCCESSFULLY_DELETED))
+                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.AUTH_SUCCESSFULLY_DELETED))
                         .build())
                 .httpStatus(HttpStatus.OK)
                 .hasError(false)
@@ -104,6 +105,8 @@ public class AuthController {
 
     private AuthResponse convertAuthResponse(Auth auth) {
         return AuthResponse.builder()
+                .name(auth.getName())
+                .surname(auth.getSurname())
                 .email(auth.getEmail())
                 .password(auth.getPassword())
                 .build();

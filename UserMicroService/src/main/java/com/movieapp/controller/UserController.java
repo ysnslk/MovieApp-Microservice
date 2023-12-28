@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,19 +33,9 @@ public class UserController {
     @PostMapping("/{language}" + SAVE)
     @Operation(summary = "This endpoint creates user", description = "Create user")
     @CrossOrigin("*")
-    public InternalApiResponse<UserResponse> register(@PathVariable("language")ELanguage language,
-                                                      @RequestBody CreateUserRequestDto createUserRequestDto){
-        User user = userService.saveUser(language, createUserRequestDto);
-        UserResponse userResponse = convertUserResponse(user);
-        return InternalApiResponse.<UserResponse>builder()
-                .friendlyMessage(FriendlyMessage.builder()
-                        .title(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.SUCCESS))
-                        .description(FriendlyMessageUtils.getFriendlyMessage(language, FriendlyMessageCodes.USER_SUCCESSFULLY_CREATED))
-                        .build())
-                .httpStatus(HttpStatus.CREATED)
-                .hasError(false)
-                .payload(userResponse)
-                .build();
+    public ResponseEntity<String> register(@PathVariable("language")ELanguage language,
+                                   @RequestBody CreateUserRequestDto createUserRequestDto){
+        return ResponseEntity.ok(userService.saveUser(language,createUserRequestDto));
     }
 
 

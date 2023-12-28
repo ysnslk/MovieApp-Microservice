@@ -1,7 +1,14 @@
 package com.movieapp.service;
 
 import com.movieapp.dto.request.CreateAuthRequestDto;
+import com.movieapp.dto.request.CreateUserRequestDto;
 import com.movieapp.dto.request.UpdateAuthRequestDto;
+import com.movieapp.dto.response.AuthResponse;
+import com.movieapp.dto.response.InternalApiResponse;
+import com.movieapp.dto.response.UserResponse;
+import com.movieapp.exception.enums.FriendlyMessageCodes;
+import com.movieapp.exception.exceptions.*;
+import com.movieapp.manager.IUserManager;
 import com.movieapp.mapper.IAuthMapper;
 import com.movieapp.repository.IAuthRepository;
 import com.movieapp.repository.entity.Auth;
@@ -18,19 +25,24 @@ import java.util.Optional;
 public class AuthService extends ServiceManager<Auth, String> {
     private final IAuthRepository authRepository;
     private final IAuthMapper authMapper;
+    private final IUserManager userManager;
 
-    public AuthService(MongoRepository<Auth, String> repository, IAuthRepository authRepository, IAuthMapper authMapper) {
+    public AuthService(MongoRepository<Auth, String> repository, IAuthRepository authRepository, IAuthMapper authMapper, IUserManager userManager) {
         super(repository);
         this.authRepository = authRepository;
         this.authMapper = authMapper;
+        this.userManager = userManager;
     }
 
     public Auth saveAuth(ELanguage language, CreateAuthRequestDto createAuthRequestDto) {
         try {
             Auth auth = authMapper.saveToAuth(createAuthRequestDto);
+            CreateUserRequestDto createUserRequestDto = authMapper.convertToCreateUser(createAuthRequestDto);
+            String userId = userManager.register(language, createUserRequestDto).getBody();
+            auth.setUserId(String.valueOf(userId));
             return save(auth);
         } catch (Exception e) {
-            throw new RuntimeException("Kayıt olmadı");
+            throw new AuthNotCreatedException(language, FriendlyMessageCodes.AUTH_NOT_CREATED_EXCEPTION, "User not created.");
         }
     }
 
@@ -38,12 +50,14 @@ public class AuthService extends ServiceManager<Auth, String> {
         try {
             Optional<Auth> auth = findById(updateAuthRequestDto.getAuthId());
             if (auth.isEmpty()) {
-                throw new RuntimeException("Kayıt olmadı.");
+                throw new AuthNotFoundException(language, FriendlyMessageCodes.AUTH_NOT_FOUND_EXCEPTION,
+                        "User not found for auth id: " + updateAuthRequestDto.getAuthId());
             }
             auth = Optional.ofNullable(authMapper.updateToAuth(updateAuthRequestDto));
             return update(auth.get());
         } catch (Exception e) {
-            throw e;
+            throw new AuthUpdateFailed(language, FriendlyMessageCodes.AUTH_UPDATE_FAILED,
+                    "User update failed for auth id: " + updateAuthRequestDto.getAuthId());
         }
     }
 
@@ -51,7 +65,8 @@ public class AuthService extends ServiceManager<Auth, String> {
         try {
             return findAll();
         } catch (Exception e) {
-            throw new RuntimeException("Getirilemedi");
+            throw new AuthNotFoundException(language, FriendlyMessageCodes.AUTHS_NOT_FOUND_EXCEPTION,
+                    "User List not found ");
         }
     }
 
@@ -59,16 +74,19 @@ public class AuthService extends ServiceManager<Auth, String> {
         try {
             Optional<Auth> auth = findById(authId);
             if (auth.isEmpty()) {
-                throw new RuntimeException("Silinemedi");
+                throw new AuthNotFoundException(language, FriendlyMessageCodes.AUTH_NOT_FOUND_EXCEPTION,
+                        "User not found for auth id: " + authId);
             }
             if (auth.get().getStatus() == EStatus.DELETED) {
-                throw new RuntimeException("Zaten silinmiş");
+                throw new AuthAlreadyDeletedException(language, FriendlyMessageCodes.AUTH_ALREADY_DELETED,
+                        "User already deleted for auth id: " + authId);
             }
             auth.get().setStatus(EStatus.DELETED);
             update(auth.get());
             return true;
         } catch (Exception e) {
-            throw new RuntimeException("Hata");
+            throw new AuthDeleteFailed(language, FriendlyMessageCodes.AUTH_DELETE_FAILED,
+                    "User delete failed for auth id: " + authId);
         }
     }
 }
