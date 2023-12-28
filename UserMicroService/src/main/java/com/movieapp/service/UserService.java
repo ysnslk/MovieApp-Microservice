@@ -33,8 +33,8 @@ public class UserService extends ServiceManager<User, String> {
         try {
             User user = userMapper.saveToUser(createUserRequestDto);
             return save(user);
-        }catch (Exception e){
-            throw new UserNotCreatedException(language,FriendlyMessageCodes.USER_NOT_CREATED_EXCEPTION, "User not created");
+        } catch (Exception e) {
+            throw new UserNotCreatedException(language, FriendlyMessageCodes.USER_NOT_CREATED_EXCEPTION, "User not created");
         }
     }
 
@@ -47,8 +47,7 @@ public class UserService extends ServiceManager<User, String> {
             }
             user = Optional.ofNullable(userMapper.updateToUser(updateUserRequestDto));
             return update(user.get());
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new UserUpdateFailed(language, FriendlyMessageCodes.USER_UPDATE_FAILED,
                     "User update failed for user id: " + updateUserRequestDto.getUserId());
         }
@@ -58,7 +57,7 @@ public class UserService extends ServiceManager<User, String> {
     public List<User> findAllUser(ELanguage language) {
         try {
             return findAll();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new UserDeleteFailed(language, FriendlyMessageCodes.USERS_NOT_FOUND_EXCEPTION,
                     "User List not found ");
         }
@@ -69,17 +68,16 @@ public class UserService extends ServiceManager<User, String> {
             Optional<User> user = findById(userId);
             if (user.isEmpty()) {
                 throw new UserNotFoundException(language, FriendlyMessageCodes.USER_NOT_FOUND_EXCEPTION,
-                    "User not found for user id: " + userId);
+                        "User not found for user id: " + userId);
             }
-            if (user.get().getStatus()== EStatus.DELETED){
-                throw new UserAlreadyDeletedException(language,FriendlyMessageCodes.USER_ALREADY_DELETED,
-                    "User already deleted for user id: " +userId);
-        }
+            if (user.get().getStatus() == EStatus.DELETED) {
+                throw new UserAlreadyDeletedException(language, FriendlyMessageCodes.USER_ALREADY_DELETED,
+                        "User already deleted for user id: " + userId);
+            }
             user.get().setStatus(EStatus.DELETED);
             update(user.get());
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UserDeleteFailed(language, FriendlyMessageCodes.USER_DELETE_FAILED,
                     "User delete failed for user id: " + userId);
         }

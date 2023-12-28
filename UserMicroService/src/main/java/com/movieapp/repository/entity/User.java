@@ -16,15 +16,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User extends BaseEntity {
     @Id
     private String userId;
-    @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
     private String surname;
-    @Column(nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
     private String password;
-    @Column(nullable = false, unique = true)
     private String phoneNumber;
     @Builder.Default
     private ERole role=ERole.GUEST;
